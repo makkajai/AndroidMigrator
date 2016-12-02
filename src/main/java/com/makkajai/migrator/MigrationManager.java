@@ -34,7 +34,7 @@ public class MigrationManager {
         Log.w(TAG, "Latest migrated version: " + latestVersion);
         SharedPreferences.Editor editor = prefs.edit();
 
-        if(isFirstInstall(activity)) {
+        if(isFirstInstall(activity, latestVersion)) {
             //Need to put the last version in the migration into the preferences;
             if(tasks.size() > 0) {
                 editor.putInt(MIGRATION_KEY, tasks.last().getVersion());
@@ -60,11 +60,12 @@ public class MigrationManager {
         editor.apply();
     }
 
-    public boolean isFirstInstall(Activity activity) {
+    public boolean isFirstInstall(Activity activity, int latestVersion) {
         try {
             long firstInstallTime =   activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).firstInstallTime;
             long lastUpdateTime = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).lastUpdateTime;
-            return firstInstallTime == lastUpdateTime;
+            Log.w(TAG, "First Install Time: " + firstInstallTime + " Last update time: " + lastUpdateTime);
+            return latestVersion <= 0;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             return false;
